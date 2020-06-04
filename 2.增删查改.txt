@@ -1,0 +1,207 @@
+★★
+在搜索引擎找牛客题  ：
+1.题目：site：nowcoder.com（高级设置，只找nowcoder.com域内的）
+2.在评论区找思路，在已通过代码的用户中找代码
+
+
+★★
+cmd界面和mysql界面（mysq>....)
+
+学习过的SQL都是在mysql界面上输入
+1.中英文的标点符号
+2.；作为结尾
+3.单引号和双引号不做严格区分
+4.建议SQL先在notepad++上写好，再复制过来
+
+
+★★
+（Service  ->  Database  ->  Table  ->(Column,Row)）
+结构性内容
+
+
+★★
+步骤：
+create 创建
+drop   丢弃
+show  查看列出所有
+use     设置默认库
+
+
+★★
+DML ---- 针对数据进行 增删查改
+insert into user(cloumn_list) values(values_list),......;
+
+
+★★
+Select
+select           column子句
+              from 表名（数据来源）
+              where 
+                   条件表达式 
+              order by 结果进行排序
+              limit ....
+
+
+★★
+--开头，代表sql中注释（“--”）
+
+
+★★
+--查询exam_result所有数据行的所有列   （*）
+select * from exam_result;
+
+--查询所有行，但只需要给出name列      （* name）
+select name from exam_result;
+
+
+★★
+select.....from.....不是一个具体的列名称，实际上是一个表达式：
+eg:  1.一个或多个列,列名称
+       2.带运算的表达式+-*/（以，进行分割别）
+       3.带函数的方式   select database（）；
+       4.*
+       5.别名  ...from ... as
+       6.distinct合并重复项
+
+1.select id,name,10 from exam_result;
+2.select id,name,english+10 from exam_result;(给英语成绩加10)
+3.select id,name,chinese+math+endlish from exam_result;(3科加在一起，总分)
+4.select id,name,chinese+math+endlish as total from exam_result;(total作为别名显示）
+5.select math from exam_result;(查数学成绩）
+6.select distinct math from exam_result;(distinct合并重复项）
+7.select math >60 from exam_result;(变成布尔类型）
+8.select * from exam_result where endlish > chinese;（所有英语成绩大于语文的）
+9.select * from exam_result where endlish =50;（所有英语成绩=50的）
+10.select * from exam_result where endlish !=60;（所有英语成绩不等于60的）
+11.select * from exam_result where name = 'tang';（名字是tang的所有信息）
+12.select * from exam_result where endlish between 67 and 100;(between x and y  成绩在[x,y]之间的)
+13.select * from exam_result where name in('sun','tang');(查询孙和唐的成绩)
+14.select * from exam_result where name = 'sun' or 'tang';(查询孙或唐的成绩)
+
+
+★★
+SQL语句中基本都是小括号，很少有大括号和中括号
+遇到 ->或者'->之类的提示符后，就不要再继续输入心得SQL了，而应该先把之前的sql结束掉
+
+select“唐三藏”from....;
+          （当一个字符串）
+select 唐三藏 from....;
+           （当一个列名称）
+
+
+★★
+charest=latinl 这种情况下，字符集就不对了
+1.使用drop database先把库删除
+2.重新使用create database建一个库，要加上charest utf8mb4;
+  create database Java_xxx charest utf8mb4;
+3.重新建表
+4.重新插入语句
+
+
+★★
+where 子句
+          逻辑表达式
+
+与 或 非 进行单元逻辑表达式的组合
+> >=   大于 大于等于
+< >=   小于 小于等于
+=         等于
+!=        不等于
+
+
+★★
+关于null值
+1.语义含义上，是不知道不清楚的含义
+2.有null参与的运算，结果基本都是null
+      null + 1 = null
+3.如果null值出现在where中，null被视为false
+
+
+★★
+模糊匹配：不是特别精确的匹配（%  _）
+★
+-- % 代表 
+--0个或者多个字符                                数目待定
+--如果出现，可以是任意字符               字符待定
+
+1.查询某个同学的成绩，条件是，该同学姓孙
+select * from exam_result where name like 'sun%'；
+
+2.查找某个同学的成绩，条件是 该同学叫“什么孙“
+select * from exam_result where name like '%sun';
+
+3.查找某个同学的成绩，条件是 该同学中带“孙“
+select * from exam_result where name like '%sun%';
+★
+-- _ ：
+--字符数目固定，必须是1个
+--字符是什么待定
+
+1.查sun某
+select * from exam_result where name like 'sun_';
+
+2.查sun某某
+select * from exam_result where name like 'sun__';
+
+
+★★
+'>代表你输入sql中，有单引号没有闭合的情况，先输入单引号，再输入；让之前的sql先结束；最后进行新sql的输入
+
+
+★★
+and or not
+and的优先级高于or，在同时使用时，需要使用小括号()
+
+chinese >80 or math >70 and endlish >70;(语文和英语，或数学>70）
+（chinese >80 or math >70 ）and endlish >70;（语文或数学，同时满足英语）
+
+
+★★
+order by
+一个select语句中，使用order by来制定排序依据。
+一个select语句中，没有出现order by，严格意义上，结果是无序的（虽然实现中，看起来多是插入顺序）
+
+
+★★
+order by表达式（主要是一个字段名称） ASC升序   DESC降序
+
+--查询所有人的成绩，按照数学成绩排序，从低到高
+select * from exam_result order by math;
+select * from exam_result order by math asc;
+
+--查询所有人的成绩，按照数学成绩排序，从高到低
+select * from exam_result order by math desc;
+
+如果有两个相等的成绩，它两的排序是随机的
+
+
+★★
+limit分页的前提，首先是依赖结果已经有序   --用到limit的地方，就应该带着order by
+limit 3；                  选择前3个
+select * from exam_result order by id limit 3；
+
+limit 3 offset 5；     从5号下标开始，选出3个  6.7.8
+select * from exam_result order by id limit 3 offset 2;
+
+limit 5,3                  等于从5选3
+select * from exam_result order by id limit 3 offset 2;
+
+
+
+★★
+总结：
+
+1.Select --基本查询
+
+2.子句的执行顺序：
+MySQL标准上没有该说法，是合理推测
+from -> where | select -> order by -> limit
+给定一个ArrayList<ExamResult>examResult;
+
+
+
+
+
+
+
+
