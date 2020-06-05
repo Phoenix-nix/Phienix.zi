@@ -1,0 +1,183 @@
+★★
+上节课：
+select 子句                         必须出现的
+from子句                           可选
+where子句                         可选
+orderby子句                       可选
+limit子句                            可选
+
+
+★★
+1. * 代表全部列，按照定义的顺序给出
+2.select后边可以跟 表达式、函数
+3.where条件为真的进行显示
+         1.null参与的
+         2.between ......and..... 左闭右闭
+         3.in（......）
+4.and的优先级高于or
+4.没有出现order by 一律认为是无序的
+5.ASC低到高   desc高到低    asc是默认项
+6.order by如果出现多个字段c1,c2,c3，比较的依据，c1字段相等，c2才起作用
+7.limit配合order by来使用
+8.offset的下标从0 开始
+9.别名（alias name）字段可以起别名；表可以起别名；库可以起别名
+10.distict合并重复项
+11.string的模糊查询    %   _
+
+
+★★
+select背后的模型的粗浅理解
+from代表数据源     select对列做筛选         where对行做筛选 
+order  by   对结果做筛选                           limit最终分页
+
+
+
+★★
+更新操作：
+
+update 表名 set c1 = 新的值，c2 = 新的值
+where 条件       order by子句        limit子句
+
+把唐三藏的QQ邮箱信息修改
+update student set qq_mail = "tangtang@fo" where name = "tang";
+（where name是修改条件）
+
+--修改唐三藏信息
+update student set qq_mail = "tangtang@fo" where name = "tang";
+--成绩小于60 ，修改成60
+update exam_result set endlish = 60 where endlish < 60;
+--大于60，都加60
+update exam_result set endlish = endlish + where endlish >60;
+--把孙改成孙猴子，同时，学号改成10101
+update student set name = 'sunhouzi',sn = '10101'where name = 'sun';
+
+
+
+★★
+delete from表名where 条件 order by.....limit.....;
+把delete换成select *。查询出来是哪些行，就会删除哪些行！
+
+删除学生表中，ID=103的信息
+mysql> delete from student where id= 103;
+
+删除整个学生表
+delete from student；
+
+
+
+★★
+约束：
+允许字段存入的数据的限制
+在建表的时候，就可以制定边字段的约束条件
+
+create table student （
+     ID int 约束，
+     ....
+）；
+
+1.null va not null          mysql上，基于性能的考虑，建议每次都加上not null
+2.unique                      该字段是否允许表内出现重复（null不算在里面）
+3.default                      插入时没有明确给出值，该字段的默认值是什么，没有制定default，默认就是null
+4.primary key               主键（一条数据的唯一标识）    -----在数据库理论中是一个非常重要的一个键               
+                                    1.不能是null
+                                    2.不能重复
+5.mysql上，基于性能的考虑，建议选择一个自增的数列作为主键
+auto_increment
+6.外键（foreign key） 和值约束（check）不讲了
+
+
+
+改造学生表
+create table student_0604 (
+     id int primary key auto_increment comment'xuanzedeshulie',
+     sn int unique comment'xuehao,keyibutian ,yejiushinull,dantianlebunengchongfu',
+     name varchar(100) not null comment'buyunxuweinull'
+);
+
+     sex char(1) not null default 'nv' comment'xingbie'
+
+--有约束情况下，进行插入
+观察ID的自增和性别的默认值
+insert into student_0604(sn,name)value('1001','sun'),('1002','zhu');
+观察ID的自增和指定了性别的
+insert into student_0604(sn,name,sex)value('1001','sun','nan'),('1002','zhu');
+
+
+
+★★
+目前使用约束的通用建议：
+1.所有的表，都带上一个自增的int的ID作为主键
+2.所有的字段，一律使用not null
+3.所有的字段，一律带上comment
+4.选择合适的加上default
+5.选择合适的加上unique
+
+
+
+★★
+把mysql和显示的项目结合起来------如何根据需求，进行建表----设计思路
+
+博客系统的项目
+
+1.需求的分析和整理
+   动作：
+         1.用户可以发表文章，约束用户是登录状态
+         2.注册用户
+         3.用户登录
+         4.用户可以对任意一篇文章进行评论，约束用户是登录状态
+         5.用户可以点赞任意文章，约束用户是登录状态
+         6.可以有条件的查看文章列表
+   从动作中找出实体(Entity)
+         用户、文章、评论
+
+
+2.通过简单的E-R图，找出实体和实体之间的关系，并找出复杂关系（Entity Relationship）
+       
+                      用户                (发表→1：n)                    文章
+             
+                               (评论→1：n) 评论 (评论←1：n)
+   
+          实体和实体有三种关系：1:1         1：n        m:n
+
+1.实体之间不要求值存在一种关系（评论和点赞）
+2.为了满足多对多关系，需要建立中间关系
+
+
+3.根据需求，细化字段
+所有ID全部有！！
+
+
+4.深入细化全部类型
+
+
+
+
+
+★★
+三大范式：
+
+1.表中的字段，必须是不能再切分的
+      create table users（
+      id....，
+      username_and_nickname_and_password  
+      ）;
+2.表中的字段，必须和主键是全部关联的，不能是部分关联的
+      create table 点赞关系表（      
+      user_id，
+      aritice_id,   联合主键，不可能出现u和a全部相同的记录（同一个用户负同一片文章点赞）
+       如果保存了uername，就会数据冗余
+
+3.表中的字段，必须和主键，是直接关联而不是间接
+      create table comment（
+      id....，
+      username，和评论id之间的关系，是通过评论者id间接的产生关系的
+）；
+       如果保存了uername，也会数据冗余
+
+
+★★
+
+1.update和delete
+2.重点--表的设计
+   按步骤进行
+
